@@ -23,10 +23,12 @@
 	},
 	"dependencies": {
 		"@next/third-parties": "^16",
+		"@octokit/types": "^16.0.0",
 		"@praha/byethrow": "^0.8.1",
 		"@t3-oss/env-nextjs": "^0.13",
 		"@yamada-ui/react": "^2",
 		"next": "^16",
+		"octokit": "^5.0.5",
 		"react": "^19",
 		"react-dom": "^19",
 		"remeda": "^2",

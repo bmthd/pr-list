@@ -52,13 +52,15 @@ src/
 │   │       ├── error.tsx
 │   │       └── pr-detail.tsx # PR詳細コンポーネント
 │   └── api/               # API ルート（必要に応じて）
-├── lib/                   # ライブラリ関数
-│   └── github/           # GitHub API サーバーサイド関数
-│       └── api.ts        # Server Components用データフェッチ関数
+├── repositories/          # データアクセス層（Repository パターン）
+│   └── github-repository.ts # GitHub API データ取得
 ├── utils/                # 共通ユーティリティ
 ├── config/               # 設定ファイル
-└── types/                # アプリケーション型定義
-    └── app.ts            # アプリケーション独自型
+├── interfaces/           # インターフェース定義
+│   ├── github.interface.ts # GitHub関連インターフェース
+│   └── app.interface.ts    # アプリケーション独自インターフェース
+└── types/                # 型定義
+    └── index.ts          # 型エクスポート
 ```
 
 ## GitHub API 仕様

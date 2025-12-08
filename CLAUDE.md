@@ -39,6 +39,7 @@ import { Button, Card, useDisclosure, useWindowEvent } from "@/ui";
 詳細なドキュメントを確認する場合は、[Yamada UIのドキュメント](https://yamada-ui.com/)を参照してください。
 公式ドキュメントのディレクトリ構造は以下です。
 コンポーネントは`docs/components/comp-name`、hooksは`docs/hooks/hook-name`にあります。
+単に型定義だけを確認したい場合は`node_modules/@yamada-ui/react/dist/types`を参照してください。
 lucideアイコンは同名のものが`@/ui`からエクスポートされています。
 suffix無しでは使用できないので、`ActivityIcon`のように必ずsuffixを付けてください。
 
@@ -73,13 +74,26 @@ HTMLに習い、`disabled`や`open`のように命名してください。
 open ? <Box /> : null
 ```
 
+- bun run dev及びbun run buildは禁止です。
+  - 作業をdevサーバーを立ち上げずに始めることはありえないため、devコマンドは使用しないでください。localhost:3000にアクセスして開発サーバーが立ち上がっていることを確認してください。
+  - buildコマンドについても、開発時の確認のためだけに使用するのは無駄のため、禁止です。代わりに`check:all`を使用してください。
+
 - 動作確認が必要な場合はplaywright mcpを使用してください。
 開発URLは`http://localhost:3000`です。
+
+- インラインコメントは禁止です。
+  - 代わりにメソッドコメントを使用してください。
+  - 重要な情報を残す必要がある場合は`.claude/`配下にドキュメントを作成してください。
 
 - Linkコンポーネントの使い分け
   - TextLinkまたはButtonLinkを使用してください。
   - 独自のスタイルのリンク: `<Box as={Link}>`のようにas Propを使用してください。 
     Linkは`react-router`からインポートしてください。
+
+- ユーザーの変更を尊重してください
+  - 作業の途中でユーザーが変更を加える場合があります。
+  - あなたが*:fixを実行した結果の自動変更を除き、ユーザーの変更を尊重し、元に戻そうとしないでください。
+  - コードに問題がある場合は、ユーザーに修正を提案してください。
 
 ## 禁則事項
 - コメントや不要なコードは残さないこと。

@@ -39,74 +39,91 @@ interface PRStatistics {
 }
 ```
 
-### 3. Server Components データフェッチ設計
+### 3. Repository パターンによるデータフェッチ設計
 
-#### GitHub API サーバーサイド関数
+#### GitHub Repository インターフェース
 ```typescript
-// lib/github/api.ts - Server Components用データフェッチ関数
-
-export async function searchPRs(username: string, options?: {
-  state?: 'open' | 'closed' | 'all';
-  sort?: 'created' | 'updated' | 'comments';
-  order?: 'asc' | 'desc';
-  per_page?: number;
-  page?: number;
-}): Promise<GitHubSearchResponse> {
-  const token = process.env.GITHUB_TOKEN;
-  const url = buildSearchURL(username, options);
-  
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': token ? `Bearer ${token}` : undefined,
-      'Accept': 'application/vnd.github.v3+json',
-    },
-    cache: 'force-cache',
-    next: { revalidate: 300 }, // 5分間キャッシュ
-  });
-
-  if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.status}`);
-  }
-
-  return response.json();
+// interfaces/github.interface.ts
+interface IGitHubRepository {
+  searchPRs(username: string, options?: SearchOptions): Promise<GitHubSearchResponse>;
+  getPRDetails(owner: string, repo: string, pullNumber: number): Promise<AppPullRequest>;
+  getPRStatistics(username: string): Promise<PRStatistics>;
 }
 
-export async function getPRDetails(owner: string, repo: string, pullNumber: number): Promise<PullRequest> {
-  const token = process.env.GITHUB_TOKEN;
-  const url = `https://api.github.com/repos/${owner}/${repo}/pulls/${pullNumber}`;
-  
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': token ? `Bearer ${token}` : undefined,
-      'Accept': 'application/vnd.github.v3+json',
-    },
-    cache: 'force-cache',
-    next: { revalidate: 600 }, // 10分間キャッシュ
-  });
+// repositories/github-repository.ts - Repository パターン実装
 
-  if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.status}`);
+class GitHubRepository implements IGitHubRepository {
+  private readonly baseURL = 'https://api.github.com';
+  private readonly token = env.GITHUB_TOKEN;
+
+  async searchPRs(username: string, options?: SearchOptions): Promise<GitHubSearchResponse> {
+    const url = this.buildSearchURL(username, options);
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': this.token ? `Bearer ${this.token}` : undefined,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+      cache: 'force-cache',
+      next: { revalidate: 300 }, // 5分間キャッシュ
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.status}`);
+    }
+
+    return response.json();
   }
 
-  return response.json();
-}
+  async getPRDetails(owner: string, repo: string, pullNumber: number): Promise<AppPullRequest> {
+    const url = `${this.baseURL}/repos/${owner}/${repo}/pulls/${pullNumber}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': this.token ? `Bearer ${this.token}` : undefined,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+      cache: 'force-cache',
+      next: { revalidate: 600 }, // 10分間キャッシュ
+    });
 
-function buildSearchURL(username: string, options?: any): string {
-  const baseUrl = 'https://api.github.com/search/issues';
-  const params = new URLSearchParams({
-    q: `author:${username}+type:pr`,
-    sort: options?.sort || 'created',
-    order: options?.order || 'desc',
-    per_page: String(options?.per_page || 30),
-    page: String(options?.page || 1),
-  });
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.status}`);
+    }
 
-  if (options?.state && options.state !== 'all') {
-    params.set('q', params.get('q') + `+state:${options.state}`);
+    return response.json();
   }
 
-  return `${baseUrl}?${params}`;
+  async getPRStatistics(username: string): Promise<PRStatistics> {
+    const allPRs = await this.searchPRs(username, { state: 'all', per_page: 100 });
+    
+    return {
+      total: allPRs.total_count,
+      open: allPRs.items.filter(pr => pr.state === 'open').length,
+      closed: allPRs.items.filter(pr => pr.state === 'closed').length,
+      merged: allPRs.items.filter(pr => pr.merged_at).length,
+    };
+  }
+
+  private buildSearchURL(username: string, options?: SearchOptions): string {
+    const params = new URLSearchParams({
+      q: `author:${username}+type:pr`,
+      sort: options?.sort || 'created',
+      order: options?.order || 'desc',
+      per_page: String(options?.per_page || 30),
+      page: String(options?.page || 1),
+    });
+
+    if (options?.state && options.state !== 'all') {
+      params.set('q', params.get('q') + `+state:${options.state}`);
+    }
+
+    return `${this.baseURL}/search/issues?${params}`;
+  }
 }
+
+// Server Components での使用例
+export const gitHubRepository = new GitHubRepository();
 ```
 
 ### 4. Next.js App Router キャッシュ戦略
@@ -196,7 +213,7 @@ export async function searchPRs(username: string, options?: any) {
 
 // 2. 環境変数での認証トークン必須化
 export async function makeGitHubRequest(url: string) {
-  const token = process.env.GITHUB_TOKEN;
+  const token = env.GITHUB_TOKEN;
   
   if (!token) {
     throw new Error('GITHUB_TOKEN is required for API requests');
@@ -268,7 +285,7 @@ export async function getPRStatistics(username: string): Promise<PRStatistics> {
 
 // ページコンポーネントでの使用例
 export default async function HomePage() {
-  const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME!;
+  const username = env.NEXT_PUBLIC_GITHUB_USERNAME!;
   const [prs, stats] = await Promise.all([
     searchPRs(username, { per_page: 30 }),
     getPRStatistics(username),
@@ -303,7 +320,7 @@ export default async function PRsPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME!;
+  const username = env.NEXT_PUBLIC_GITHUB_USERNAME;
   const filters: PRFilters = {
     state: (searchParams.state as any) || 'all',
     sortBy: (searchParams.sortBy as any) || 'created',
