@@ -6,9 +6,8 @@ import {
 	GitMergeIcon,
 	GitPullRequestArrowIcon,
 	GitPullRequestClosedIcon,
-	GitPullRequestIcon,
 	HStack,
-	Link,
+	NextLink,
 	Text,
 	VStack,
 } from "@/ui";
@@ -29,22 +28,27 @@ export function PRCard({ pr }: PRCardProps) {
 			gap={4}
 			p={4}
 			w="full"
+			maxW="4xl"
+			mx="auto"
 			borderBottom="1px solid"
 			borderColor="gray.200"
-			_hover={{ bg: "gray.50" }}
 			transition="all 0.2s"
 		>
-			<Avatar src={orgAvatarUrl} name={repositoryOwner} size="md" />
+			<NextLink href={`https://github.com/${repositoryOwner}`}>
+				<Avatar src={orgAvatarUrl} name={repositoryOwner} size="md" shape="rounded" />
+			</NextLink>
 
 			<VStack gap={2} align="start" flex={1}>
-				<Link href={pr.html_url} external color="blue.600" fontWeight="semibold" fontSize="md" lineHeight="short">
+				<NextLink href={pr.html_url} external color="blue.600" fontWeight="semibold" fontSize="md" lineHeight="short">
 					{pr.title}
-				</Link>
+				</NextLink>
 
 				<HStack gap={3} align="center">
 					<PRStatusIcon pr={pr} />
 					<Text fontSize="sm" color="gray.600">
-						by {repositoryOwner} / {repositoryName}
+						<NextLink href={`https://github.com/${repositoryOwner}`}>{repositoryOwner}</NextLink>
+						{" / "}
+						<NextLink href={`https://github.com/${repositoryOwner}/${repositoryName}`}>{repositoryName}</NextLink>
 					</Text>
 					<Text fontSize="sm" color="gray.500">
 						#{pr.number}

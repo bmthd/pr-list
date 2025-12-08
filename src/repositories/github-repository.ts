@@ -3,9 +3,9 @@ import { env } from "@/config";
 import type {
 	IGitHubRepository,
 	PRStatistics,
+	PullRequestDetails,
 	SearchOptions,
 	SearchResponse,
-	PullRequestDetails,
 } from "@/interfaces/github.interface";
 
 class GitHubRepository implements IGitHubRepository {
@@ -19,7 +19,6 @@ class GitHubRepository implements IGitHubRepository {
 	}
 
 	async searchPRs(username: string, options?: SearchOptions): Promise<SearchResponse> {
-		// GitHub Search API用のクエリを構築（publicリポジトリのみ）
 		let query = `author:${username} type:pr is:public`;
 
 		if (options?.state && options.state !== "all") {
@@ -80,5 +79,4 @@ class GitHubRepository implements IGitHubRepository {
 	}
 }
 
-// Server Components での使用例
 export const gitHubRepository = new GitHubRepository();

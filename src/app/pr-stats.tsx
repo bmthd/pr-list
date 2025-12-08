@@ -21,27 +21,21 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 
 				<Tabs.Panels>
 					<Tabs.Panel index={0}>
-						<VStack gap={4} w="full" maxW="4xl">
-							{allPRs.map((pr) => (
-								<PRCard key={pr.id} pr={pr} />
-							))}
-						</VStack>
+						{allPRs.map((pr) => (
+							<PRCard key={pr.id} pr={pr} />
+						))}
 					</Tabs.Panel>
 
 					<Tabs.Panel index={1}>
-						<VStack gap={4} w="full" maxW="4xl">
-							{openPRs.map((pr) => (
-								<PRCard key={pr.id} pr={pr} />
-							))}
-						</VStack>
+						{openPRs.map((pr) => (
+							<PRCard key={pr.id} pr={pr} />
+						))}
 					</Tabs.Panel>
 
 					<Tabs.Panel index={2}>
-						<VStack gap={4} w="full" maxW="4xl">
-							{mergedPRs.map((pr) => (
-								<PRCard key={pr.id} pr={pr} />
-							))}
-						</VStack>
+						{mergedPRs.map((pr) => (
+							<PRCard key={pr.id} pr={pr} />
+						))}
 					</Tabs.Panel>
 				</Tabs.Panels>
 			</Tabs.Root>
