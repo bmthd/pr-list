@@ -34,6 +34,7 @@ export interface SearchOptions {
 // GitHub Repository インターフェース
 export interface IGitHubRepository {
 	searchPRs(username: string, options?: SearchOptions): Promise<SearchResponse>;
+	searchAllPRs(username: string, options?: Omit<SearchOptions, "page" | "per_page">): Promise<SearchResponse>;
 	getPRDetails(owner: string, repo: string, pullNumber: number): Promise<PullRequestDetails>;
 	getPRStatistics(username: string): Promise<PRStatistics>;
 }

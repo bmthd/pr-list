@@ -1,82 +1,70 @@
 import { Octokit } from "octokit";
 import { env } from "@/config";
-import type {
-	IGitHubRepository,
-	PRStatistics,
-	PullRequestDetails,
-	SearchOptions,
-	SearchResponse,
-} from "@/interfaces/github.interface";
+import type { SearchOptions, SearchResponse } from "@/interfaces/github.interface";
 
-class GitHubRepository implements IGitHubRepository {
-	private readonly octokit: Octokit;
+const octokit = new Octokit({
+	auth: env.GITHUB_TOKEN,
+	userAgent: "pr-list-app",
+});
 
-	constructor() {
-		this.octokit = new Octokit({
-			auth: env.GITHUB_TOKEN,
-			userAgent: "pr-list-app",
-		});
+export async function searchAllPRs(
+	username: string,
+	options?: Omit<SearchOptions, "page" | "per_page">
+): Promise<SearchResponse> {
+	let query = `author:${username} type:pr is:public`;
+
+	if (options?.state && options.state !== "all") {
+		query += ` state:${options.state}`;
 	}
 
-	async searchPRs(username: string, options?: SearchOptions): Promise<SearchResponse> {
-		let query = `author:${username} type:pr is:public`;
+	console.log("GitHub Search Query (All PRs):", query);
 
-		if (options?.state && options.state !== "all") {
-			query += ` state:${options.state}`;
-		}
+	try {
+		const allItems = [];
+		let page = 1;
+		let totalCount = 0;
+		let incompleteResults = false;
 
-		console.log("GitHub Search Query:", query);
+		// GitHub Search API has a maximum limit of 1000 results
+		const perPage = 100; // Maximum allowed per page
 
-		try {
-			const response = await this.octokit.rest.search.issuesAndPullRequests({
+		while (true) {
+			const response = await octokit.rest.search.issuesAndPullRequests({
 				q: query,
 				sort: options?.sort || "created",
 				order: options?.order || "desc",
-				per_page: options?.per_page || 30,
-				page: options?.page || 1,
+				per_page: perPage,
+				page,
 			});
 
-			console.log("GitHub API Response:", {
-				total_count: response.data.total_count,
-				items_length: response.data.items.length,
-			});
+			if (page === 1) {
+				totalCount = response.data.total_count;
+				incompleteResults = response.data.incomplete_results;
+			}
 
-			return {
-				total_count: response.data.total_count,
-				incomplete_results: response.data.incomplete_results,
-				items: response.data.items,
-			};
-		} catch (error) {
-			console.error("GitHub API error:", error);
-			throw error;
+			allItems.push(...response.data.items);
+
+			// Break if we've fetched all items or reached the last page
+			if (response.data.items.length < perPage || allItems.length >= Math.min(totalCount, 1000)) {
+				break;
+			}
+
+			page++;
 		}
-	}
 
-	async getPRDetails(owner: string, repo: string, pullNumber: number): Promise<PullRequestDetails> {
-		try {
-			const response = await this.octokit.rest.pulls.get({
-				owner,
-				repo,
-				pull_number: pullNumber,
-			});
-
-			return response.data;
-		} catch (error) {
-			console.error("GitHub API error:", error);
-			throw error;
-		}
-	}
-
-	async getPRStatistics(username: string): Promise<PRStatistics> {
-		const allPRs = await this.searchPRs(username, { state: "all", per_page: 100 });
+		console.log("GitHub API Response (All PRs):", {
+			total_count: totalCount,
+			items_fetched: allItems.length,
+			pages_fetched: page,
+		});
 
 		return {
-			total: allPRs.total_count,
-			open: allPRs.items.filter((pr) => pr.state === "open").length,
-			closed: allPRs.items.filter((pr) => pr.state === "closed" && !pr.pull_request?.merged_at).length,
-			merged: allPRs.items.filter((pr) => pr.pull_request?.merged_at).length,
+			total_count: totalCount,
+			incomplete_results: incompleteResults,
+			items: allItems,
 		};
+	} catch (error) {
+		console.error("GitHub API error:", error);
+		throw error;
 	}
 }
-
-export const gitHubRepository = new GitHubRepository();
