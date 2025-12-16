@@ -1,6 +1,6 @@
 import { env } from "@/config";
 import { Avatar, Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Text, VStack } from "@/ui";
-import { OrganizationsList } from "./organication-list";
+import { OrganizationsList } from "./organization-list";
 
 export default function Layout({ children }: LayoutProps<"/">) {
 	return (
