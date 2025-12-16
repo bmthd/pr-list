@@ -37,6 +37,8 @@ export function PRListItem({ pr }: PRListItemProps) {
 							overflow="hidden"
 							textOverflow="ellipsis"
 							whiteSpace="nowrap"
+							flex={1}
+							minW={0}
 						>
 							{pr.title}
 						</NextLink>
@@ -46,9 +48,9 @@ export function PRListItem({ pr }: PRListItemProps) {
 					</HStack>
 
 					<HStack gap={3} flexWrap="wrap" fontSize="xs" color="gray.500">
-						<Text fontFamily="mono" color="gray.600" fontWeight="medium">
+						<NextLink href={pr.html_url} external fontFamily="mono" colorScheme="gray" fontWeight="medium">
 							#{pr.number}
-						</Text>
+						</NextLink>
 						<Text fontWeight="medium">
 							<NextLink href={`https://github.com/${repositoryOwner}`} external fontWeight="medium" colorScheme="gray">
 								{repositoryOwner}
@@ -101,9 +103,10 @@ function StatusBadge({ pr }: { pr: AppPullRequest }) {
 			textTransform="capitalize"
 			fontSize="xs"
 			fontWeight="medium"
-			rounded="full"
 			px={2}
 			py={0.5}
+			w="3.5rem"
+			display="center"
 		>
 			{status}
 		</Badge>
