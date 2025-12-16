@@ -7,6 +7,8 @@ export type PullRequestSearchItem = Endpoints["GET /search/issues"]["response"][
 
 export type PullRequestDetails = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
 
+export type Owner = NonNullable<PullRequestSearchItem["repository"]>["owner"];
+
 // アプリケーション固有の型定義
 export interface SearchResponse {
 	total_count: number;

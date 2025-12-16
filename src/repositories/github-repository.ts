@@ -1,11 +1,27 @@
+import type { Endpoints } from "@octokit/types";
 import { Octokit } from "octokit";
 import { env } from "@/config";
-import type { SearchOptions, SearchResponse } from "@/interfaces/github.interface";
 
 const octokit = new Octokit({
 	auth: env.GITHUB_TOKEN,
 	userAgent: "pr-list-app",
 });
+
+interface SearchOptions {
+	state?: "open" | "closed" | "all";
+	sort?: "created" | "updated" | "comments";
+	order?: "asc" | "desc";
+	per_page?: number;
+	page?: number;
+}
+
+export type PullRequestSearchItem = Endpoints["GET /search/issues"]["response"]["data"]["items"][0];
+
+interface SearchResponse {
+	totalCount: number;
+	incompleteResults: boolean;
+	items: PullRequestSearchItem[];
+}
 
 export async function searchAllPRs(
 	username: string,
@@ -59,8 +75,8 @@ export async function searchAllPRs(
 		});
 
 		return {
-			total_count: totalCount,
-			incomplete_results: incompleteResults,
+			totalCount: totalCount,
+			incompleteResults: incompleteResults,
 			items: allItems,
 		};
 	} catch (error) {

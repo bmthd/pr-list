@@ -1,8 +1,6 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { env } from "@/config";
 import { searchAllPRs } from "@/repositories/github-repository";
-import { Container, Heading, Loading, VStack } from "@/ui";
 import { PRTabs } from "./pr-stats";
 
 export const revalidate = 300; // 5分間のページキャッシュ
@@ -12,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		const prs = await searchAllPRs(env.NEXT_PUBLIC_GITHUB_USERNAME);
 		const openPRs = prs.items.filter((pr) => pr.state === "open").length;
 		const closedPRs = prs.items.filter((pr) => pr.state === "closed").length;
-		const totalPRs = prs.total_count;
+		const totalPRs = prs.totalCount;
 
 		return {
 			title: "Dashboard",
@@ -35,21 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-	const prs = await searchAllPRs(env.NEXT_PUBLIC_GITHUB_USERNAME);
+	const pullRequests = await searchAllPRs(env.NEXT_PUBLIC_GITHUB_USERNAME);
 
-	return (
-		<Container.Root maxW="8xl" py={8}>
-			<VStack gap={8}>
-				<VStack gap={4}>
-					<Heading as="h1" size="2xl" textAlign="center">
-						bmthd's Pull Requests
-					</Heading>
-				</VStack>
-
-				<Suspense fallback={<Loading.Dots />}>
-					<PRTabs allPRs={prs.items} />
-				</Suspense>
-			</VStack>
-		</Container.Root>
-	);
+	return <PRTabs allPRs={pullRequests.items} />;
 }
