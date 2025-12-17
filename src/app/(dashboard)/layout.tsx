@@ -1,6 +1,6 @@
 import { env } from "@/config";
 import { Avatar, Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Text, VStack } from "@/ui";
-import { OrganizationsList } from "./organization-list";
+import { ContributedOrganizations } from "./organization-list";
 
 export default function Layout({ children }: LayoutProps<"/">) {
 	return (
@@ -12,7 +12,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
 					<GridItem>
 						<VStack gap={6}>
 							<UserProfileSummary />
-							<OrganizationsList />
+							<ContributedOrganizations />
 						</VStack>
 					</GridItem>
 
@@ -27,7 +27,7 @@ function NavigationHeader() {
 	const username = env.NEXT_PUBLIC_GITHUB_USERNAME;
 
 	return (
-		<Box as="header" bg="gray.900" color="white" px={6} py={4} position="sticky" top={0} zIndex={50} shadow="md">
+		<Box as="header" bg="gray.900" color="white" px={6} py={4} shadow="md">
 			<HStack justify="space-between" align="center">
 				<HStack gap={3}>
 					<GithubIcon w={8} h={8} />
@@ -77,8 +77,8 @@ function UserProfileSummary() {
 						</Text>
 					</VStack>
 					<Grid w="full" templateColumns="1fr 1fr" gap={2}>
-						<Card.Root bg="gray.50">
-							<Card.Body p={2} textAlign="center">
+						<Card.Root bg="bg.subtle">
+							<Card.Body p={2} display="center">
 								<Text fontWeight="bold" color="gray.900">
 									250
 								</Text>
@@ -87,8 +87,8 @@ function UserProfileSummary() {
 								</Text>
 							</Card.Body>
 						</Card.Root>
-						<Card.Root bg="gray.50">
-							<Card.Body p={2} textAlign="center">
+						<Card.Root bg="bg.subtle">
+							<Card.Body p={2} display="center">
 								<Text fontWeight="bold" color="green.600">
 									189
 								</Text>

@@ -1,15 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CONSTANTS } from "@/constants";
+import { useOrganizationFilter } from "@/hooks/use-organization-filter";
 import type { AppPullRequest } from "@/interfaces/github.interface";
 import {
 	Badge,
 	Box,
 	Card,
+	type Component,
 	Flex,
 	GitMergeIcon,
+	GitPullRequestClosedIcon,
 	GitPullRequestIcon,
 	HStack,
+	type IconProps,
 	Input,
 	InputGroup,
 	Pagination,
@@ -20,37 +25,67 @@ import {
 } from "@/ui";
 import { PRListItem } from "./pr-list-item";
 
+interface TabDefinition {
+	label: string;
+	icon: Component<"svg", IconProps>;
+	key: "all" | "open" | "merged" | "closed";
+	filter?: (pr: AppPullRequest) => boolean;
+}
+
+const TAB_DEFINITIONS: TabDefinition[] = [
+	{
+		label: "All",
+		icon: GitPullRequestIcon,
+		key: "all" as const,
+	},
+	{
+		label: "Open",
+		icon: GitPullRequestIcon,
+		key: "open" as const,
+		filter: (pr) => pr.state === "open",
+	},
+	{
+		label: "Merged",
+		icon: GitMergeIcon,
+		key: "merged" as const,
+		filter: (pr) => Boolean(pr.pull_request?.merged_at),
+	},
+	{
+		label: "Closed",
+		icon: GitPullRequestClosedIcon,
+		key: "closed" as const,
+		filter: (pr) => pr.state === "closed" && !pr.pull_request?.merged_at,
+	},
+];
+
 interface PRTabsProps {
 	allPRs: AppPullRequest[];
 }
 
 export function PRTabs({ allPRs }: PRTabsProps) {
-	const [searchQuery, setSearchQuery] = useState("");
+	const [selectedOrganization] = useOrganizationFilter();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [activeTabIndex, setActiveTabIndex] = useState(0);
-	const itemsPerPage = 15;
 
-	const openPRs = allPRs.filter((pr) => pr.state === "open");
-	const mergedPRs = allPRs.filter((pr) => pr.pull_request?.merged_at);
+	const organizationFilteredPRs = useMemo(() => {
+		if (!selectedOrganization) return allPRs;
+		const normalizedOrganization = selectedOrganization.toLowerCase();
+		return allPRs.filter((pr) => getRepositoryOwner(pr).toLowerCase() === normalizedOrganization);
+	}, [allPRs, selectedOrganization]);
 
-	const filteredPRs = useMemo(() => {
-		let prsToFilter = allPRs;
-		if (activeTabIndex === 1) prsToFilter = openPRs;
-		if (activeTabIndex === 2) prsToFilter = mergedPRs;
+	const tabFilteredPRs = useMemo(() => {
+		const categorizedPRs = getPRsByCategory(organizationFilteredPRs);
+		const tabKey = TAB_DEFINITIONS[activeTabIndex].key;
+		return categorizedPRs[tabKey];
+	}, [organizationFilteredPRs, activeTabIndex]);
 
-		return prsToFilter.filter((pr) => {
-			if (!searchQuery) return true;
-			const query = searchQuery.toLowerCase();
-			return (
-				pr.title.toLowerCase().includes(query) ||
-				pr.html_url.toLowerCase().includes(query) ||
-				pr.number.toString().includes(query)
-			);
-		});
-	}, [allPRs, openPRs, mergedPRs, activeTabIndex, searchQuery]);
+	const { searchQuery, filteredPRs, handleSearch } = usePRSearch(tabFilteredPRs);
 
-	const totalPages = Math.ceil(filteredPRs.length / itemsPerPage);
-	const paginatedPRs = filteredPRs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+	const totalPages = Math.ceil(filteredPRs.length / CONSTANTS.ITEMS_PER_PAGE);
+	const paginatedPRs = filteredPRs.slice(
+		(currentPage - 1) * CONSTANTS.ITEMS_PER_PAGE,
+		currentPage * CONSTANTS.ITEMS_PER_PAGE
+	);
 
 	const handleTabChange = (index: number) => {
 		setActiveTabIndex(index);
@@ -63,15 +98,15 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 		}
 	};
 
-	const handleSearch = (query: string) => {
-		setSearchQuery(query);
+	const handleSearchWithReset = (query: string) => {
+		handleSearch(query);
 		setCurrentPage(1);
 	};
 
 	return (
 		<VStack gap={4} w="full" display="center">
 			<Tabs.Root index={activeTabIndex} onChange={handleTabChange}>
-				<Card.Root position="sticky" top="20" shadow="lg">
+				<Card.Root position="sticky" top="2" shadow="lg">
 					<Card.Body p={4}>
 						<Flex
 							direction={{ base: "column", sm: "row" }}
@@ -94,28 +129,16 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 								<Input
 									placeholder="Filter by title or repo..."
 									value={searchQuery}
-									onChange={(e) => handleSearch(e.target.value)}
+									onChange={(e) => handleSearchWithReset(e.target.value)}
 								/>
 							</InputGroup.Root>
 						</Flex>
 
-						<TabsNavigation allPRs={allPRs} openPRs={openPRs} mergedPRs={mergedPRs} />
+						<TabsNavigation allPRs={organizationFilteredPRs} />
 					</Card.Body>
 				</Card.Root>
 
-				<Tabs.Panels>
-					<Tabs.Panel index={0}>
-						<PRListDisplay paginatedPRs={paginatedPRs} />
-					</Tabs.Panel>
-
-					<Tabs.Panel index={1}>
-						<PRListDisplay paginatedPRs={paginatedPRs} />
-					</Tabs.Panel>
-
-					<Tabs.Panel index={2}>
-						<PRListDisplay paginatedPRs={paginatedPRs} />
-					</Tabs.Panel>
-				</Tabs.Panels>
+				<PRListDisplay paginatedPRs={paginatedPRs} />
 			</Tabs.Root>
 
 			{totalPages > 1 && (
@@ -127,33 +150,24 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 
 interface TabsNavigationProps {
 	allPRs: AppPullRequest[];
-	openPRs: AppPullRequest[];
-	mergedPRs: AppPullRequest[];
-	activeTabIndex: number;
-	onTabChange: (index: number) => void;
 }
 
-function TabsNavigation({ allPRs, openPRs, mergedPRs }: Pick<TabsNavigationProps, "allPRs" | "openPRs" | "mergedPRs">) {
+function TabsNavigation({ allPRs }: TabsNavigationProps) {
 	return (
 		<Tabs.List>
-			<Tabs.Tab index={0}>
-				<HStack gap={2}>
-					<GitPullRequestIcon w={4} h={4} />
-					<Text>All ({allPRs.length})</Text>
-				</HStack>
-			</Tabs.Tab>
-			<Tabs.Tab index={1}>
-				<HStack gap={2}>
-					<GitPullRequestIcon w={4} h={4} />
-					<Text>Open ({openPRs.length})</Text>
-				</HStack>
-			</Tabs.Tab>
-			<Tabs.Tab index={2}>
-				<HStack gap={2}>
-					<GitMergeIcon w={4} h={4} />
-					<Text>Merged ({mergedPRs.length})</Text>
-				</HStack>
-			</Tabs.Tab>
+			{TAB_DEFINITIONS.map(({ icon: Icon, ...tab }, index) => {
+				const prs = tab.filter ? allPRs.filter(tab.filter) : allPRs;
+				return (
+					<Tabs.Tab key={tab.key} index={index}>
+						<HStack gap={2}>
+							<Icon w={4} h={4} />
+							<Text>
+								{tab.label} ({prs.length})
+							</Text>
+						</HStack>
+					</Tabs.Tab>
+				);
+			})}
 		</Tabs.List>
 	);
 }
@@ -184,4 +198,47 @@ function PRListDisplay({ paginatedPRs }: PRListDisplayProps) {
 			)}
 		</Card.Root>
 	);
+}
+
+function getRepositoryOwner(pr: AppPullRequest) {
+	const parts = pr.html_url.split("/");
+	return parts[3] ?? "";
+}
+
+function getPRsByCategory(prs: AppPullRequest[]) {
+	return {
+		all: prs,
+		open: prs.filter((pr) => pr.state === "open"),
+		merged: prs.filter((pr) => pr.pull_request?.merged_at),
+		closed: prs.filter((pr) => pr.state === "closed" && !pr.pull_request?.merged_at),
+	};
+}
+
+export function usePRSearch(prs: AppPullRequest[]) {
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const filteredPRs = useMemo(() => {
+		if (!searchQuery) {
+			return prs;
+		}
+
+		const query = searchQuery.toLowerCase();
+		return prs.filter((pr) => {
+			return (
+				pr.title.toLowerCase().includes(query) ||
+				pr.html_url.toLowerCase().includes(query) ||
+				pr.number.toString().includes(query)
+			);
+		});
+	}, [prs, searchQuery]);
+
+	const handleSearch = (query: string) => {
+		setSearchQuery(query);
+	};
+
+	return {
+		searchQuery,
+		filteredPRs,
+		handleSearch,
+	};
 }

@@ -1,5 +1,6 @@
 import type { AppPullRequest } from "@/interfaces/github.interface";
 import {
+	Avatar,
 	Badge,
 	Box,
 	GitMergeIcon,
@@ -19,6 +20,7 @@ export function PRListItem({ pr }: PRListItemProps) {
 	const urlParts = pr.html_url.split("/");
 	const repositoryOwner = urlParts[3];
 	const repositoryName = urlParts[4];
+	const orgAvatarUrl = `https://github.com/${repositoryOwner}.png`;
 
 	return (
 		<Box p={4} _hover={{ bg: `color-mix(in srgb, bg.panel, gray 5%)` }} transition="colors" _groupHover={{}}>
@@ -48,23 +50,46 @@ export function PRListItem({ pr }: PRListItemProps) {
 					</HStack>
 
 					<HStack gap={3} flexWrap="wrap" fontSize="xs" color="gray.500">
-						<NextLink href={pr.html_url} external fontFamily="mono" colorScheme="gray" fontWeight="medium">
+						<NextLink
+							href={pr.html_url}
+							external
+							fontFamily="mono"
+							colorScheme="gray"
+							fontWeight="medium"
+							w="2rem"
+							textAlign="right"
+							flexShrink={0}
+						>
 							#{pr.number}
 						</NextLink>
-						<Text fontWeight="medium">
-							<NextLink href={`https://github.com/${repositoryOwner}`} external fontWeight="medium" colorScheme="gray">
-								{repositoryOwner}
-							</NextLink>
-							/
+						<HStack gap={2} fontWeight="medium">
 							<NextLink
-								href={`https://github.com/${repositoryOwner}/${repositoryName}`}
+								href={`https://github.com/${repositoryOwner}`}
 								external
-								fontWeight="medium"
-								colorScheme="gray"
+								aria-label={`${repositoryOwner} organization`}
 							>
-								{repositoryName}
+								<Avatar src={orgAvatarUrl} name={repositoryOwner} w={4} h={4} shape="square" />
 							</NextLink>
-						</Text>
+							<Text>
+								<NextLink
+									href={`https://github.com/${repositoryOwner}`}
+									external
+									fontWeight="medium"
+									colorScheme="gray"
+								>
+									{repositoryOwner}
+								</NextLink>
+								/
+								<NextLink
+									href={`https://github.com/${repositoryOwner}/${repositoryName}`}
+									external
+									fontWeight="medium"
+									colorScheme="gray"
+								>
+									{repositoryName}
+								</NextLink>
+							</Text>
+						</HStack>
 						<Text>opened on {new Date(pr.created_at).toLocaleDateString("ja-JP")}</Text>
 					</HStack>
 				</VStack>

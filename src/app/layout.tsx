@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next";
 import { config, theme } from "@/theme";
 import { ColorModeScript, UIProvider } from "@/ui";
 
@@ -87,7 +88,7 @@ export default function RootLayout({
 			<body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
 				<ColorModeScript />
 				<UIProvider theme={theme} config={config}>
-					{children}
+					<NuqsAdapter>{children}</NuqsAdapter>
 				</UIProvider>
 			</body>
 		</html>

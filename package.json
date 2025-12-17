@@ -28,6 +28,7 @@
 		"@t3-oss/env-nextjs": "^0.13",
 		"@yamada-ui/react": "^2",
 		"next": "^16",
+		"nuqs": "^2.8.5",
 		"octokit": "^5.0.5",
 		"react": "^19",
 		"react-dom": "^19",
