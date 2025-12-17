@@ -9,6 +9,7 @@ import {
 	Box,
 	Card,
 	type Component,
+	EmptyState,
 	Flex,
 	GitMergeIcon,
 	GitPullRequestClosedIcon,
@@ -188,13 +189,12 @@ function PRListDisplay({ paginatedPRs }: PRListDisplayProps) {
 					))}
 				</VStack>
 			) : (
-				<Flex direction="column" align="center" justify="center" py={20} color="gray.500">
-					<SearchIcon w={12} h={12} color="gray.300" mb={4} />
-					<Text fontSize="lg" fontWeight="medium">
-						No pull requests found
-					</Text>
-					<Text fontSize="sm">Try adjusting your filters or search query.</Text>
-				</Flex>
+				<EmptyState.Root
+					indicator={<SearchIcon />}
+					title="No pull requests found"
+					description="Try adjusting your filters or search query."
+					py={20}
+				/>
 			)}
 		</Card.Root>
 	);

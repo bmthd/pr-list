@@ -1,6 +1,6 @@
 import { env } from "@/config";
 import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Text, VStack } from "@/ui";
-import { GithubAvatar } from "./my-avatar";
+import { GithubAvatar } from "./github-avatar";
 import { ContributedOrganizations } from "./organization-list";
 
 export default function Layout({ children }: LayoutProps<"/">) {
@@ -8,18 +8,16 @@ export default function Layout({ children }: LayoutProps<"/">) {
 		<Box minH="100vh" bg="gray.50" color="gray.800">
 			<NavigationHeader />
 
-			<Box maxW="7xl" mx="auto" px={4} py={8}>
-				<Grid templateColumns={{ base: "1fr 3fr", lg: "1fr" }} gap={8}>
-					<GridItem>
-						<VStack gap={6}>
-							<UserProfileSummary />
-							<ContributedOrganizations />
-						</VStack>
-					</GridItem>
+			<Grid templateColumns={{ base: "1fr 3fr", lg: "1fr" }} gap={8} w="full" maxW="7xl" mx="auto" px={4} py={8}>
+				<GridItem>
+					<VStack gap={6}>
+						<UserProfileSummary />
+						<ContributedOrganizations />
+					</VStack>
+				</GridItem>
 
-					<GridItem>{children}</GridItem>
-				</Grid>
-			</Box>
+				<GridItem>{children}</GridItem>
+			</Grid>
 		</Box>
 	);
 }
