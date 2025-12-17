@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CONSTANTS } from "@/constants";
-import { useOrganizationFilter } from "@/hooks/use-organization-filter";
+import { usePROrganizationFilter, usePRPagination, usePRSearch, usePRTab } from "@/hooks/use-pr-state";
 import type { AppPullRequest } from "@/interfaces/github.interface";
 import {
 	Badge,
@@ -64,9 +64,9 @@ interface PRTabsProps {
 }
 
 export function PRTabs({ allPRs }: PRTabsProps) {
-	const [selectedOrganization] = useOrganizationFilter();
-	const [currentPage, setCurrentPage] = useState(1);
-	const [activeTabIndex, setActiveTabIndex] = useState(0);
+	const [selectedOrganization] = usePROrganizationFilter();
+	const [currentPage, setCurrentPage] = usePRPagination();
+	const [activeTabIndex, setActiveTabIndex] = usePRTab();
 
 	const organizationFilteredPRs = useMemo(() => {
 		if (!selectedOrganization) return allPRs;
@@ -80,7 +80,22 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 		return categorizedPRs[tabKey];
 	}, [organizationFilteredPRs, activeTabIndex]);
 
-	const { searchQuery, filteredPRs, handleSearch } = usePRSearch(tabFilteredPRs);
+	const [searchQuery, setSearchQuery] = usePRSearch();
+
+	const filteredPRs = useMemo(() => {
+		if (!searchQuery) {
+			return tabFilteredPRs;
+		}
+
+		const query = searchQuery.toLowerCase();
+		return tabFilteredPRs.filter((pr) => {
+			return (
+				pr.title.toLowerCase().includes(query) ||
+				pr.html_url.toLowerCase().includes(query) ||
+				pr.number.toString().includes(query)
+			);
+		});
+	}, [tabFilteredPRs, searchQuery]);
 
 	const totalPages = Math.ceil(filteredPRs.length / CONSTANTS.ITEMS_PER_PAGE);
 	const paginatedPRs = filteredPRs.slice(
@@ -90,7 +105,6 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 
 	const handleTabChange = (index: number) => {
 		setActiveTabIndex(index);
-		setCurrentPage(1);
 	};
 
 	const handlePageChange = (page: number) => {
@@ -100,8 +114,7 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 	};
 
 	const handleSearchWithReset = (query: string) => {
-		handleSearch(query);
-		setCurrentPage(1);
+		setSearchQuery(query);
 	};
 
 	return (
@@ -211,34 +224,5 @@ function getPRsByCategory(prs: AppPullRequest[]) {
 		open: prs.filter((pr) => pr.state === "open"),
 		merged: prs.filter((pr) => pr.pull_request?.merged_at),
 		closed: prs.filter((pr) => pr.state === "closed" && !pr.pull_request?.merged_at),
-	};
-}
-
-export function usePRSearch(prs: AppPullRequest[]) {
-	const [searchQuery, setSearchQuery] = useState("");
-
-	const filteredPRs = useMemo(() => {
-		if (!searchQuery) {
-			return prs;
-		}
-
-		const query = searchQuery.toLowerCase();
-		return prs.filter((pr) => {
-			return (
-				pr.title.toLowerCase().includes(query) ||
-				pr.html_url.toLowerCase().includes(query) ||
-				pr.number.toString().includes(query)
-			);
-		});
-	}, [prs, searchQuery]);
-
-	const handleSearch = (query: string) => {
-		setSearchQuery(query);
-	};
-
-	return {
-		searchQuery,
-		filteredPRs,
-		handleSearch,
 	};
 }

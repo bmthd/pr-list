@@ -1,6 +1,6 @@
 "use client";
 
-import { useOrganizationFilter } from "@/hooks/use-organization-filter";
+import { usePROrganizationFilter } from "@/hooks/use-pr-state";
 import {
 	Avatar,
 	BuildingIcon,
@@ -27,10 +27,10 @@ interface OrganizationsClientProps {
 }
 
 export function OrganizationsClient({ organizations }: OrganizationsClientProps) {
-	const [selectedOrganization, setSelectedOrganization] = useOrganizationFilter();
+	const [selectedOrganization, setSelectedOrganization] = usePROrganizationFilter();
 
 	const handleClearFilter = () => {
-		setSelectedOrganization(null);
+		setSelectedOrganization("");
 	};
 
 	return (
@@ -55,7 +55,7 @@ export function OrganizationsClient({ organizations }: OrganizationsClientProps)
 					) : null}
 				</HStack>
 			</Card.Header>
-			<RadioGroup.Root value={selectedOrganization} onChange={setSelectedOrganization}>
+			<RadioGroup.Root value={selectedOrganization || undefined} onChange={setSelectedOrganization}>
 				<VStack gap={0}>
 					{organizations.length === 0 ? (
 						<HStack px={4} py={6} justify="center">
