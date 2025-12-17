@@ -4,6 +4,6 @@ interface MyAvatarProps extends AvatarProps {
 	username: string;
 }
 
-export const MyAvatar = ({ username, ...props }: MyAvatarProps) => {
+export const GithubAvatar = ({ username, ...props }: MyAvatarProps) => {
 	return <Avatar src={`https://github.com/${username}.png`} name={username} {...props} />;
 };

@@ -1,6 +1,6 @@
 import { env } from "@/config";
 import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Text, VStack } from "@/ui";
-import { MyAvatar } from "./my-avatar";
+import { GithubAvatar } from "./my-avatar";
 import { ContributedOrganizations } from "./organization-list";
 
 export default function Layout({ children }: LayoutProps<"/">) {
@@ -38,7 +38,7 @@ function NavigationHeader() {
 				</HStack>
 				<HStack gap={4}>
 					<HStack gap={2}>
-						<MyAvatar username={username} size="sm" borderWidth="1px" borderColor="gray.600" />
+						<GithubAvatar username={username} size="sm" borderWidth="1px" borderColor="gray.600" />
 						<Text fontSize="sm" fontWeight="medium">
 							{username}
 						</Text>
@@ -56,7 +56,7 @@ function UserProfileSummary() {
 		<Card.Root>
 			<Card.Body p={6}>
 				<VStack align="center" gap={4}>
-					<MyAvatar username={username} size="xl" outline="4px solid" outlineColor="gray.100" />
+					<GithubAvatar username={username} size="xl" outline="4px solid" outlineColor="gray.100" />
 					<VStack gap={1} align="center">
 						<Heading size="xl" color="gray.900">
 							{username}
