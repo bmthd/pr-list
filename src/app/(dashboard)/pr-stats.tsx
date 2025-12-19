@@ -15,6 +15,7 @@ import {
 	GitPullRequestClosedIcon,
 	GitPullRequestIcon,
 	HStack,
+	IconButton,
 	type IconProps,
 	Input,
 	InputGroup,
@@ -23,6 +24,7 @@ import {
 	Tabs,
 	Text,
 	VStack,
+	XIcon,
 } from "@/ui";
 import { PRListItem } from "./pr-list-item";
 
@@ -145,6 +147,15 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 									value={searchQuery}
 									onChange={(e) => handleSearchWithReset(e.target.value)}
 								/>
+								<InputGroup.Element clickable>
+									<IconButton
+										variant="ghost"
+										size="sm"
+										icon={<XIcon />}
+										aria-label="Clear search"
+										onClick={() => handleSearchWithReset("")}
+									/>
+								</InputGroup.Element>
 							</InputGroup.Root>
 						</Flex>
 
