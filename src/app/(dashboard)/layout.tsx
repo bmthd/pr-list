@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { env } from "@/config";
 import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Text, VStack } from "@/ui";
 import { GithubAvatar } from "./github-avatar";
@@ -28,12 +29,14 @@ function NavigationHeader() {
 	return (
 		<Box as="header" bg="gray.900" color="white" px={6} py={4} shadow="md">
 			<HStack justify="space-between" align="center">
-				<HStack gap={3}>
-					<GithubIcon w={8} h={8} />
-					<Heading as="h1" size="lg" fontWeight="bold" letterSpacing="tight">
-						My Contribution Dashboard
-					</Heading>
-				</HStack>
+				<Link href="/">
+					<HStack gap={3}>
+						<GithubIcon w={8} h={8} />
+						<Heading as="h1" size="lg" fontWeight="bold" letterSpacing="tight">
+							My Contribution Dashboard
+						</Heading>
+					</HStack>
+				</Link>
 				<HStack gap={4}>
 					<HStack gap={2}>
 						<GithubAvatar username={username} size="sm" borderWidth="1px" borderColor="gray.600" />
