@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { usePROrganizationFilter } from "@/hooks/use-pr-state";
 import {
 	Avatar,
 	BuildingIcon,
@@ -15,6 +14,7 @@ import {
 	Text,
 	XIcon,
 } from "@/ui";
+import { usePROrganizationFilter } from "./use-pr-state";
 
 type Organization = {
 	login: string;

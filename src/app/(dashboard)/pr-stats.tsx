@@ -2,7 +2,6 @@
 
 import { type ChangeEventHandler, useCallback, useMemo } from "react";
 import { CONSTANTS } from "@/constants";
-import { usePROrganizationFilter, usePRPagination, usePRSearch, usePRTab } from "@/hooks/use-pr-state";
 import type { AppPullRequest } from "@/interfaces/github.interface";
 import {
 	Badge,
@@ -29,6 +28,7 @@ import {
 	XIcon,
 } from "@/ui";
 import { PRListItem } from "./pr-list-item";
+import { usePROrganizationFilter, usePRPagination, usePRSearch, usePRTab } from "./use-pr-state";
 
 interface TabDefinition {
 	label: string;
@@ -110,8 +110,9 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 	const handleTabChange = useCallback(
 		(index: number) => {
 			setActiveTabIndex(index);
+			setCurrentPage(1);
 		},
-		[setActiveTabIndex]
+		[setActiveTabIndex, setCurrentPage]
 	);
 
 	const handlePageChange = useCallback(
@@ -160,17 +161,20 @@ interface SearchInputProps extends InputGroup.RootProps {}
 
 function SearchInput({ ...props }: SearchInputProps) {
 	const [searchQuery, setSearchQuery] = usePRSearch();
+	const [, setCurrentPage] = usePRPagination();
 
 	const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
 		(e) => {
 			setSearchQuery(e.target.value);
+			setCurrentPage(1);
 		},
-		[setSearchQuery]
+		[setSearchQuery, setCurrentPage]
 	);
 
 	const handleClear = useCallback(() => {
 		setSearchQuery("");
-	}, [setSearchQuery]);
+		setCurrentPage(1);
+	}, [setSearchQuery, setCurrentPage]);
 
 	return (
 		<InputGroup.Root {...props}>
