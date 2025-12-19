@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { type ChangeEventHandler, useCallback, useMemo } from "react";
 import { CONSTANTS } from "@/constants";
 import { usePROrganizationFilter, usePRPagination, usePRSearch, usePRTab } from "@/hooks/use-pr-state";
 import type { AppPullRequest } from "@/interfaces/github.interface";
@@ -25,6 +25,7 @@ import {
 	Tabs,
 	Text,
 	VStack,
+	Wrap,
 	XIcon,
 } from "@/ui";
 import { PRListItem } from "./pr-list-item";
@@ -83,7 +84,7 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 		return categorizedPRs[tabKey];
 	}, [organizationFilteredPRs, activeTabIndex]);
 
-	const [searchQuery, setSearchQuery] = usePRSearch();
+	const [searchQuery] = usePRSearch();
 
 	const filteredPRs = useMemo(() => {
 		if (!searchQuery) {
@@ -115,53 +116,22 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 			setCurrentPage(page);
 		}
 	};
-
-	const handleSearchWithReset = (query: string) => {
-		setSearchQuery(query);
-	};
-
 	return (
 		<VStack gap={4} w="full" display="center">
 			<Tabs.Root index={activeTabIndex} onChange={handleTabChange}>
-				<Card.Root position="sticky" top="2" shadow="lg">
+				<Card.Root position="sticky" top="2" shadow="lg" zIndex="1">
 					<Card.Body p={4}>
-						<Flex
-							direction={{ base: "column", sm: "row" }}
-							align={{ base: "start", sm: "center" }}
-							justify="space-between"
-							gap={4}
-						>
+						<Wrap align={{ base: "center", sm: "center" }} justify="space-between" gap={4} w="full">
 							<HStack gap={2}>
-								<Text fontSize="lg" fontWeight="bold" color="gray.900">
+								<Text fontSize="lg" fontWeight="bold" color="gray.900" textWrap="nowrap">
 									Pull Requests
 								</Text>
 								<Badge bg="gray.100" color="gray.600" fontSize="xs">
 									{filteredPRs.length}
 								</Badge>
 							</HStack>
-							<InputGroup.Root position="relative" w={{ base: "full", sm: "64" }}>
-								<InputGroup.Element>
-									<SearchIcon />
-								</InputGroup.Element>
-								<Input
-									placeholder="Filter by title or repo..."
-									value={searchQuery}
-									onChange={(e) => handleSearchWithReset(e.target.value)}
-								/>
-
-								<InputGroup.Element clickable>
-									<Show when={searchQuery}>
-										<IconButton
-											variant="ghost"
-											size="sm"
-											icon={<XIcon />}
-											aria-label="Clear search"
-											onClick={() => handleSearchWithReset("")}
-										/>
-									</Show>
-								</InputGroup.Element>
-							</InputGroup.Root>
-						</Flex>
+							<SearchInput position="relative" w="sm" />
+						</Wrap>
 
 						<TabsNavigation allPRs={organizationFilteredPRs} />
 					</Card.Body>
@@ -174,6 +144,38 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 				<Pagination.Root page={currentPage} total={totalPages} onChange={handlePageChange} size="sm" />
 			)}
 		</VStack>
+	);
+}
+
+interface SearchInputProps extends InputGroup.RootProps {}
+
+function SearchInput({ ...props }: SearchInputProps) {
+	const [searchQuery, setSearchQuery] = usePRSearch();
+
+	const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
+		(e) => {
+			setSearchQuery(e.target.value);
+		},
+		[setSearchQuery]
+	);
+
+	const handleClear = useCallback(() => {
+		setSearchQuery("");
+	}, [setSearchQuery]);
+
+	return (
+		<InputGroup.Root {...props}>
+			<InputGroup.Element>
+				<SearchIcon />
+			</InputGroup.Element>
+			<Input placeholder="Filter by title or repo..." value={searchQuery} onChange={handleChange} />
+
+			<InputGroup.Element clickable>
+				<Show when={searchQuery}>
+					<IconButton variant="ghost" size="sm" icon={<XIcon />} aria-label="Clear search" onClick={handleClear} />
+				</Show>
+			</InputGroup.Element>
+		</InputGroup.Root>
 	);
 }
 
