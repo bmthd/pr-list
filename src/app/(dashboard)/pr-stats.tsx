@@ -133,16 +133,18 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 							<SearchInput position="relative" w="sm" />
 						</Wrap>
 
-						<TabsNavigation allPRs={organizationFilteredPRs} />
+						<Box overflow="auto" w="full">
+							<TabsNavigation prs={organizationFilteredPRs} />
+						</Box>
 					</Card.Body>
 				</Card.Root>
 
 				<PRListDisplay paginatedPRs={paginatedPRs} />
 			</Tabs.Root>
 
-			{totalPages > 1 && (
+			<Show when={totalPages > 1}>
 				<Pagination.Root page={currentPage} total={totalPages} onChange={handlePageChange} size="sm" />
-			)}
+			</Show>
 		</VStack>
 	);
 }
@@ -180,20 +182,20 @@ function SearchInput({ ...props }: SearchInputProps) {
 }
 
 interface TabsNavigationProps {
-	allPRs: AppPullRequest[];
+	prs: AppPullRequest[];
 }
 
-function TabsNavigation({ allPRs }: TabsNavigationProps) {
+function TabsNavigation({ prs }: TabsNavigationProps) {
 	return (
 		<Tabs.List>
 			{TAB_DEFINITIONS.map(({ icon: Icon, ...tab }, index) => {
-				const prs = tab.filter ? allPRs.filter(tab.filter) : allPRs;
+				const filteredPRs = tab.filter ? prs.filter(tab.filter) : prs;
 				return (
 					<Tabs.Tab key={tab.key} index={index}>
 						<HStack gap={2}>
 							<Icon w={4} h={4} />
-							<Text>
-								{tab.label} ({prs.length})
+							<Text fontSize={{ base: "md", md: "xs" }}>
+								{tab.label} ({filteredPRs.length})
 							</Text>
 						</HStack>
 					</Tabs.Tab>
