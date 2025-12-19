@@ -10,7 +10,6 @@ import {
 	Card,
 	type Component,
 	EmptyState,
-	Flex,
 	GitMergeIcon,
 	GitPullRequestClosedIcon,
 	GitPullRequestIcon,
