@@ -1,17 +1,18 @@
 "use client";
 
+import { useCallback, useMemo } from "react";
 import { usePROrganizationFilter } from "@/hooks/use-pr-state";
 import {
 	Avatar,
 	BuildingIcon,
-	Card,
+	createColumnHelper,
 	Heading,
 	HStack,
 	IconButton,
 	NextLink,
 	RadioGroup,
+	Table,
 	Text,
-	VStack,
 	XIcon,
 } from "@/ui";
 
@@ -26,74 +27,94 @@ interface OrganizationsClientProps {
 	organizations: Organization[];
 }
 
+const columnHelper = createColumnHelper<Organization>();
+
 export function OrganizationsClient({ organizations }: OrganizationsClientProps) {
 	const [selectedOrganization, setSelectedOrganization] = usePROrganizationFilter();
 
-	const handleClearFilter = () => {
-		setSelectedOrganization("");
-	};
+	const ClearFilterButton = useCallback(
+		() =>
+			selectedOrganization ? (
+				<IconButton
+					variant="ghost"
+					size="2xs"
+					colorScheme="danger"
+					aria-label="Clear organization filter"
+					icon={<XIcon w={3} h={3} color="gray.500" />}
+					onClick={() => setSelectedOrganization("")}
+				/>
+			) : null,
+		[selectedOrganization, setSelectedOrganization]
+	);
 
-	return (
-		<Card.Root overflow="hidden">
-			<Card.Header bg="bg.muted" px={4} py={3} borderBottomWidth="1px" borderColor="gray.100">
-				<HStack justify="space-between">
+	const columns = useMemo(
+		() => [
+			columnHelper.display({
+				id: "organization",
+				header: () => (
 					<HStack gap={2}>
 						<BuildingIcon w={4} h={4} color="gray.500" />
 						<Heading size="sm" color="gray.700">
 							Contributed Organizations
 						</Heading>
 					</HStack>
-					{selectedOrganization ? (
-						<IconButton
-							variant="ghost"
-							size="2xs"
-							colorScheme="danger"
-							aria-label="Clear organization filter"
-							icon={<XIcon w={3} h={3} color="gray.500" />}
-							onClick={handleClearFilter}
-						/>
-					) : null}
-				</HStack>
-			</Card.Header>
-			<RadioGroup.Root value={selectedOrganization || undefined} onChange={setSelectedOrganization}>
-				<VStack gap={0}>
-					{organizations.length === 0 ? (
-						<HStack px={4} py={6} justify="center">
-							<Text fontSize="sm" color="gray.500">
-								No repository contributions found
+				),
+				cell: ({ row }) => {
+					const organization = row.original;
+					return (
+						<HStack gap={3}>
+							<NextLink href={`https://github.com/${organization.login}`} external>
+								<Avatar src={organization.avatarUrl} name={organization.login} size="sm" shape="rounded" />
+							</NextLink>
+							<Text fontSize="sm" color="gray.700" lineClamp={1}>
+								{organization.login}
 							</Text>
 						</HStack>
-					) : (
-						organizations.map((organization) => (
-							<HStack
-								key={organization.id}
-								px={4}
-								py={3}
-								gap={3}
-								w="full"
-								borderBottomWidth="1px"
-								borderColor="gray.100"
-								_last={{ borderBottomWidth: 0 }}
-								justify="space-between"
-							>
-								<HStack gap={3}>
-									<NextLink href={`https://github.com/${organization.login}`} external>
-										<Avatar src={organization.avatarUrl} name={organization.login} size="sm" shape="rounded" />
-									</NextLink>
-									<Text fontSize="sm" color="gray.700" lineClamp={1}>
-										{organization.login}
-									</Text>
-								</HStack>
-								<RadioGroup.Item value={organization.login}>
-									<Text fontSize="xs" color="gray.500" fontWeight="medium">
-										{organization.totalPRs} PRs
-									</Text>
-								</RadioGroup.Item>
-							</HStack>
-						))
-					)}
-				</VStack>
-			</RadioGroup.Root>
-		</Card.Root>
+					);
+				},
+			}),
+			columnHelper.accessor("totalPRs", {
+				header: ClearFilterButton,
+				cell: ({ getValue, row }) => (
+					<HStack justify="flex-start" alignItems="center">
+						<RadioGroup.Item value={row.original.login}>
+							<Text fontSize="xs" color="gray.500" fontWeight="medium">
+								{getValue()} PRs
+							</Text>
+						</RadioGroup.Item>
+					</HStack>
+				),
+			}),
+		],
+		[ClearFilterButton]
+	);
+
+	const getRowId = useCallback((row: Organization) => row.id.toString(), []);
+
+	return (
+		<RadioGroup.Root
+			overflow="hidden"
+			borderRadius="md"
+			borderWidth="1px"
+			borderColor="gray.200"
+			value={selectedOrganization || undefined}
+			onChange={setSelectedOrganization}
+		>
+			<Table
+				columns={columns}
+				data={organizations}
+				getRowId={getRowId}
+				headerProps={({ id }) => ({ bg: "bg.muted", p: id === "organization" ? "md" : "sm" })}
+				rowProps={{ bg: "bg.panel", cursor: "pointer", _hover: { bg: "bg.subtle" } }}
+				cellProps={{ p: "3", verticalAlign: "middle" }}
+				enableRowSelection
+				onRowClick={(row) => setSelectedOrganization(row.original.login)}
+				withCheckbox={false}
+				defaultSorting={[
+					{ id: "totalPRs", desc: true },
+					{ id: "login", desc: false },
+				]}
+			/>
+		</RadioGroup.Root>
 	);
 }
