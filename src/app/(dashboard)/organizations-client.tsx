@@ -32,21 +32,6 @@ const columnHelper = createColumnHelper<Organization>();
 export function OrganizationsClient({ organizations }: OrganizationsClientProps) {
 	const [selectedOrganization, setSelectedOrganization] = usePROrganizationFilter();
 
-	const ClearFilterButton = useCallback(
-		() =>
-			selectedOrganization ? (
-				<IconButton
-					variant="ghost"
-					size="2xs"
-					colorScheme="danger"
-					aria-label="Clear organization filter"
-					icon={<XIcon w={3} h={3} color="gray.500" />}
-					onClick={() => setSelectedOrganization("")}
-				/>
-			) : null,
-		[selectedOrganization, setSelectedOrganization]
-	);
-
 	const columns = useMemo(
 		() => [
 			columnHelper.display({
@@ -86,7 +71,7 @@ export function OrganizationsClient({ organizations }: OrganizationsClientProps)
 				),
 			}),
 		],
-		[ClearFilterButton]
+		[]
 	);
 
 	const getRowId = useCallback((row: Organization) => row.id.toString(), []);
@@ -118,3 +103,23 @@ export function OrganizationsClient({ organizations }: OrganizationsClientProps)
 		</RadioGroup.Root>
 	);
 }
+
+const ClearFilterButton = () => {
+	const [selectedOrganization, setSelectedOrganization] = usePROrganizationFilter();
+	const handleClear = useCallback(() => {
+		setSelectedOrganization("");
+	}, [setSelectedOrganization]);
+
+	if (!selectedOrganization) return null;
+
+	return (
+		<IconButton
+			variant="ghost"
+			size="2xs"
+			colorScheme="danger"
+			aria-label="Clear organization filter"
+			icon={<XIcon w={3} h={3} color="gray.500" />}
+			onClick={handleClear}
+		/>
+	);
+};
