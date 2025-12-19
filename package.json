@@ -19,7 +19,7 @@
 		"fix:all": "bun run-s '*:fix'",
 		"similarity": "similarity-ts",
 		"knip": "bunx knip",
-		"prepare": "lefthook install"
+		"postinstall": "command -v lefthook >/dev/null 2>&1 && lefthook install || true"
 	},
 	"dependencies": {
 		"@next/third-parties": "^16",
