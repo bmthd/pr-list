@@ -20,6 +20,7 @@ import {
 	InputGroup,
 	Pagination,
 	SearchIcon,
+	Separator,
 	Show,
 	Tabs,
 	Text,
@@ -106,15 +107,22 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 		currentPage * CONSTANTS.ITEMS_PER_PAGE
 	);
 
-	const handleTabChange = (index: number) => {
-		setActiveTabIndex(index);
-	};
+	const handleTabChange = useCallback(
+		(index: number) => {
+			setActiveTabIndex(index);
+		},
+		[setActiveTabIndex]
+	);
 
-	const handlePageChange = (page: number) => {
-		if (page >= 1 && page <= totalPages) {
-			setCurrentPage(page);
-		}
-	};
+	const handlePageChange = useCallback(
+		(page: number) => {
+			if (page >= 1 && page <= totalPages) {
+				setCurrentPage(page);
+			}
+		},
+		[setCurrentPage, totalPages]
+	);
+
 	return (
 		<VStack gap={4} w="full" display="center">
 			<Tabs.Root index={activeTabIndex} onChange={handleTabChange}>
@@ -209,24 +217,23 @@ interface PRListDisplayProps {
 }
 
 function PRListDisplay({ paginatedPRs }: PRListDisplayProps) {
+	const fallback = (
+		<EmptyState.Root
+			indicator={<SearchIcon />}
+			title="No pull requests found"
+			description="Try adjusting your filters or search query."
+			py={20}
+		/>
+	);
 	return (
-		<Card.Root overflow="hidden" minH="500px">
-			{paginatedPRs.length > 0 ? (
-				<VStack gap={0}>
-					{paginatedPRs.map((pr, index) => (
-						<Box key={pr.id} borderBottomWidth={index < paginatedPRs.length - 1 ? "1px" : "0px"} borderColor="gray.100">
-							<PRListItem pr={pr} />
-						</Box>
+		<Card.Root overflow="hidden" minH="31rem">
+			<Show when={paginatedPRs.length !== 0} fallback={fallback}>
+				<VStack gap={0} separator={<Separator />}>
+					{paginatedPRs.map((pr) => (
+						<PRListItem key={pr.id} pr={pr} />
 					))}
 				</VStack>
-			) : (
-				<EmptyState.Root
-					indicator={<SearchIcon />}
-					title="No pull requests found"
-					description="Try adjusting your filters or search query."
-					py={20}
-				/>
-			)}
+			</Show>
 		</Card.Root>
 	);
 }
