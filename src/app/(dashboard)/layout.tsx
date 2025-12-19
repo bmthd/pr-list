@@ -9,7 +9,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
 		<Box minH="100vh" bg="gray.50" color="gray.800">
 			<NavigationHeader />
 
-			<Grid templateColumns={{ base: "300px 1fr", lg: "1fr" }} gap={8} w="full" maxW="7xl" mx="auto" px={4} py={8}>
+			<Grid templateColumns={{ base: "sm 1fr", lg: "1fr" }} gap={8} mx="auto" w="full" maxW="7xl" px={4} py={8}>
 				<GridItem>
 					<VStack gap={6}>
 						<UserProfileSummary />
@@ -17,7 +17,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
 					</VStack>
 				</GridItem>
 
-				<GridItem>{children}</GridItem>
+				<GridItem minW={0}>{children}</GridItem>
 			</Grid>
 		</Box>
 	);
