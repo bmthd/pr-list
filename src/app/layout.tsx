@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next";
+import { env } from "@/config";
 import { config, theme } from "@/theme";
 import { ColorModeScript, UIProvider } from "@/ui";
 
@@ -16,13 +17,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: {
-		template: "%s | bmthd's Pull Requests",
-		default: "bmthd's Pull Requests - GitHub PR Portfolio",
+		template: `%s | ${env.NEXT_PUBLIC_GITHUB_USERNAME}'s Pull Requests`,
+		default: `${env.NEXT_PUBLIC_GITHUB_USERNAME}'s Pull Requests - GitHub PR Portfolio`,
 	},
-	description:
-		"Explore bmthd's GitHub pull requests - contributions, open source projects, and development activity across various repositories.",
+	description: `Explore ${env.NEXT_PUBLIC_GITHUB_USERNAME}'s GitHub pull requests - contributions, open source projects, and development activity across various repositories.`,
 	keywords: [
-		"bmthd",
+		env.NEXT_PUBLIC_GITHUB_USERNAME,
 		"GitHub",
 		"Pull Requests",
 		"Open Source",
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
 		"Portfolio",
 		"Code Contributions",
 	],
-	authors: [{ name: "bmthd", url: "https://github.com/bmthd" }],
-	creator: "bmthd",
-	publisher: "bmthd",
+	authors: [{ name: env.NEXT_PUBLIC_GITHUB_USERNAME, url: `https://github.com/${env.NEXT_PUBLIC_GITHUB_USERNAME}` }],
+	creator: env.NEXT_PUBLIC_GITHUB_USERNAME,
+	publisher: env.NEXT_PUBLIC_GITHUB_USERNAME,
 	metadataBase: new URL("https://pr-list.bmth.dev"),
 	alternates: {
 		canonical: "/",
@@ -42,24 +42,22 @@ export const metadata: Metadata = {
 		type: "website",
 		locale: "en_US",
 		url: "/",
-		title: "bmthd's Pull Requests - GitHub PR Portfolio",
-		description:
-			"Explore bmthd's GitHub pull requests - contributions, open source projects, and development activity across various repositories.",
-		siteName: "bmthd's Pull Requests",
+		title: `${env.NEXT_PUBLIC_GITHUB_USERNAME}'s Pull Requests - GitHub PR Portfolio`,
+		description: `Explore ${env.NEXT_PUBLIC_GITHUB_USERNAME}'s GitHub pull requests - contributions, open source projects, and development activity across various repositories.`,
+		siteName: `${env.NEXT_PUBLIC_GITHUB_USERNAME}'s Pull Requests`,
 		images: [
 			{
 				url: "https://avatars.githubusercontent.com/u/81406938?v=4",
 				width: 460,
 				height: 460,
-				alt: "bmthd's GitHub Profile Picture",
+				alt: `${env.NEXT_PUBLIC_GITHUB_USERNAME}'s GitHub Profile Picture`,
 			},
 		],
 	},
 	twitter: {
 		card: "summary",
-		title: "bmthd's Pull Requests - GitHub PR Portfolio",
-		description:
-			"Explore bmthd's GitHub pull requests - contributions, open source projects, and development activity.",
+		title: `${env.NEXT_PUBLIC_GITHUB_USERNAME}'s Pull Requests - GitHub PR Portfolio`,
+		description: `Explore ${env.NEXT_PUBLIC_GITHUB_USERNAME}'s GitHub pull requests - contributions, open source projects, and development activity.`,
 		images: ["https://avatars.githubusercontent.com/u/81406938?v=4"],
 	},
 	robots: {
