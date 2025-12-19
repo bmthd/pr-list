@@ -1,7 +1,8 @@
 {
   "editor.defaultFormatter": "biomejs.biome",
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit"
+    "source.fixAll.biome": "explicit",
+    "source.addMissingImports.ts": "explicit"
   },
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
@@ -19,5 +20,5 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "editor.formatOnSave": true,
-  "npm.packageManager": "bun"
+  "npm.packageManager": "bun",
 }
