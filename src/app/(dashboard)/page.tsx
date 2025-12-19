@@ -4,7 +4,7 @@ import { searchAllPRs } from "@/repositories/github-repository";
 import { Loading } from "@/ui";
 import { PRTabs } from "./pr-stats";
 
-export const revalidate = 300; // 5分間のページキャッシュ
+export const revalidate = 3600; // Revalidate every hour
 
 export async function generateMetadata(): Promise<Metadata> {
 	try {
