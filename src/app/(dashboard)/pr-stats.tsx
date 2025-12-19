@@ -21,6 +21,7 @@ import {
 	InputGroup,
 	Pagination,
 	SearchIcon,
+	Show,
 	Tabs,
 	Text,
 	VStack,
@@ -147,14 +148,17 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 									value={searchQuery}
 									onChange={(e) => handleSearchWithReset(e.target.value)}
 								/>
+
 								<InputGroup.Element clickable>
-									<IconButton
-										variant="ghost"
-										size="sm"
-										icon={<XIcon />}
-										aria-label="Clear search"
-										onClick={() => handleSearchWithReset("")}
-									/>
+									<Show when={searchQuery}>
+										<IconButton
+											variant="ghost"
+											size="sm"
+											icon={<XIcon />}
+											aria-label="Clear search"
+											onClick={() => handleSearchWithReset("")}
+										/>
+									</Show>
 								</InputGroup.Element>
 							</InputGroup.Root>
 						</Flex>
