@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { env } from "@/config";
 import { searchAllPRs } from "@/repositories/github-repository";
+import { Loading } from "@/ui";
 import { PRTabs } from "./pr-stats";
 
 export const revalidate = 300; // 5分間のページキャッシュ
@@ -35,5 +36,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
 	const pullRequests = await searchAllPRs(env.NEXT_PUBLIC_GITHUB_USERNAME);
 
-	return <PRTabs allPRs={pullRequests.items} />;
+	return (
+		<Loading.Suspense loadingScheme="rings">
+			<PRTabs allPRs={pullRequests.items} />
+		</Loading.Suspense>
+	);
 }
