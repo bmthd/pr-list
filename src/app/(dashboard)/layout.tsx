@@ -27,7 +27,7 @@ function NavigationHeader() {
 	const username = env.NEXT_PUBLIC_GITHUB_USERNAME;
 
 	return (
-		<Box as="header" bg="gray.900" color="white" px={6} py={4} shadow="md">
+		<Box as="header" bg="sky.950" color="white" px={6} py={4} shadow="md">
 			<HStack justify="space-between" align="center">
 				<Link href="/">
 					<HStack gap={3}>
