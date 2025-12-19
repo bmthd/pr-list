@@ -1,18 +1,24 @@
 "use client";
 
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { startTransition } from "react";
 
 const PR_TAB_VALUES = ["all", "open", "merged", "closed"] as const;
 
 export type PRTabValue = (typeof PR_TAB_VALUES)[number];
 
-export function usePRState() {
-	return useQueryStates({
-		tab: parseAsString.withDefault("all"),
-		search: parseAsString.withDefault(""),
-		page: parseAsInteger.withDefault(1),
-		org: parseAsString.withDefault(""),
-	});
+function usePRState() {
+	return useQueryStates(
+		{
+			tab: parseAsString.withDefault("all"),
+			search: parseAsString.withDefault(""),
+			page: parseAsInteger.withDefault(1),
+			org: parseAsString.withDefault(""),
+		},
+		{
+			startTransition,
+		}
+	);
 }
 
 export function usePRTab() {
