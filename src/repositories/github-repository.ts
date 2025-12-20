@@ -1,3 +1,4 @@
+import "server-only";
 import type { Endpoints } from "@octokit/types";
 import { Octokit } from "octokit";
 import { cache } from "react";
@@ -84,3 +85,16 @@ export const searchAllPRs = cache(
 		}
 	}
 );
+
+export const getUserAvatarUrl = cache(async (username: string): Promise<string> => {
+	try {
+		const { data: user } = await octokit.rest.users.getByUsername({
+			username,
+		});
+
+		return user.avatar_url;
+	} catch (error) {
+		console.error("GitHub API error (getUserAvatarUrl):", error);
+		throw error;
+	}
+});
