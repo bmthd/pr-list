@@ -1,3 +1,5 @@
+"use client";
+
 import type { ButtonProps, HTMLRefAttributes, IconButtonProps, LinkProps, Merge } from "@yamada-ui/react";
 import { Button, IconButton, Link } from "@yamada-ui/react";
 import OriginalLink, { type LinkProps as OriginalLinkProps } from "next/link";

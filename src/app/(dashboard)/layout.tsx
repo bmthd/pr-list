@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Footer } from "@/app/(dashboard)/footer";
 import { env } from "@/config";
 import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Text, VStack } from "@/ui";
 import { GithubAvatar } from "./github-avatar";
@@ -6,10 +7,19 @@ import { ContributedOrganizations } from "./organization-list";
 
 export default function Layout({ children }: LayoutProps<"/">) {
 	return (
-		<Box minH="100vh" bg="gray.50" color="gray.800">
+		<Box minH="100vh" bg="gray.50" color="gray.800" display="flex" flexDirection="column">
 			<NavigationHeader />
 
-			<Grid templateColumns={{ base: "sm 1fr", lg: "1fr" }} gap={8} mx="auto" w="full" maxW="7xl" px={4} py={8}>
+			<Grid
+				templateColumns={{ base: "sm 1fr", lg: "1fr" }}
+				gap={8}
+				mx="auto"
+				w="full"
+				maxW="7xl"
+				px={4}
+				py={8}
+				flex="1"
+			>
 				<GridItem>
 					<VStack gap={6}>
 						<UserProfileSummary />
@@ -19,6 +29,8 @@ export default function Layout({ children }: LayoutProps<"/">) {
 
 				<GridItem minW={0}>{children}</GridItem>
 			</Grid>
+
+			<Footer />
 		</Box>
 	);
 }
