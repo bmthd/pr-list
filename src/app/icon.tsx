@@ -29,6 +29,7 @@ export default async function Icon() {
 				}}
 			>
 				{/* biome-ignore lint/plugin: ImageResponse requires native HTML elements */}
+				{/* biome-ignore lint/performance/noImgElement: ImageResponse requires native HTML elements */}
 				<img
 					src={avatarUrl}
 					alt="GitHub Avatar"
