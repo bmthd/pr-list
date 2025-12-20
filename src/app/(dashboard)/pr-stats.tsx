@@ -127,7 +127,7 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 	return (
 		<VStack gap={4} w="full" display="center">
 			<Tabs.Root index={activeTabIndex} onChange={handleTabChange}>
-				<Card.Root position="sticky" top="2" shadow="lg" zIndex="1">
+				<Card.Root>
 					<Card.Body p={4}>
 						<Wrap align={{ base: "center", sm: "center" }} justify="space-between" gap={4} w="full">
 							<HStack gap={2}>
@@ -141,7 +141,7 @@ export function PRTabs({ allPRs }: PRTabsProps) {
 							<SearchInput position="relative" w="sm" />
 						</Wrap>
 
-						<Box overflow="auto" w="full">
+						<Box overflowX="auto" w="full">
 							<TabsNavigation prs={organizationFilteredPRs} />
 						</Box>
 					</Card.Body>
