@@ -24,7 +24,7 @@
 	"dependencies": {
 		"@next/third-parties": "^16",
 		"@octokit/types": "^16.0.0",
-		"@praha/byethrow": "^0.8.1",
+		"@praha/byethrow": "^0.9.0",
 		"@t3-oss/env-nextjs": "^0.13",
 		"@yamada-ui/react": "^2",
 		"next": "^16",
