@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Footer } from "@/app/(dashboard)/footer";
 import { env } from "@/config";
-import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Text, VStack } from "@/ui";
+import { getUserPRStats } from "@/repositories/github-repository";
+import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Stat, Text, VStack } from "@/ui";
 import { GithubAvatar } from "./github-avatar";
 import { ContributedOrganizations } from "./organization-list";
 
@@ -62,8 +63,9 @@ function NavigationHeader() {
 	);
 }
 
-function UserProfileSummary() {
+async function UserProfileSummary() {
 	const username = env.NEXT_PUBLIC_GITHUB_USERNAME;
+	const stats = await getUserPRStats(username);
 
 	return (
 		<Card.Root>
@@ -79,26 +81,14 @@ function UserProfileSummary() {
 						</Text>
 					</VStack>
 					<Grid w="full" templateColumns="1fr 1fr" gap={2}>
-						<Card.Root bg="bg.subtle">
-							<Card.Body p={2} display="center">
-								<Text fontWeight="bold" color="gray.900">
-									250
-								</Text>
-								<Text fontSize="xs" color="gray.500">
-									Total PRs
-								</Text>
-							</Card.Body>
-						</Card.Root>
-						<Card.Root bg="bg.subtle">
-							<Card.Body p={2} display="center">
-								<Text fontWeight="bold" color="green.600">
-									189
-								</Text>
-								<Text fontSize="xs" color="gray.500">
-									Merged
-								</Text>
-							</Card.Body>
-						</Card.Root>
+						<Stat.Root>
+							<Stat.Label>Total PRs</Stat.Label>
+							<Stat.Value>{stats.totalCount}</Stat.Value>
+						</Stat.Root>
+						<Stat.Root>
+							<Stat.Label>Merged PRs</Stat.Label>
+							<Stat.Value color="green.600">{stats.mergedCount}</Stat.Value>
+						</Stat.Root>
 					</Grid>
 				</VStack>
 			</Card.Body>
