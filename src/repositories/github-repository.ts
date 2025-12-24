@@ -98,3 +98,36 @@ export const getUserAvatarUrl = cache(async (username: string): Promise<string> 
 		throw error;
 	}
 });
+
+export const getUserPRStats = cache(async (username: string) => {
+	try {
+		const allPRsQuery = `author:${username} type:pr is:public`;
+		const mergedPRsQuery = `author:${username} type:pr is:public is:merged`;
+
+		console.log("GitHub Search Query (Stats):", { allPRsQuery, mergedPRsQuery });
+
+		const [allPRsResponse, mergedPRsResponse] = await Promise.all([
+			octokit.rest.search.issuesAndPullRequests({
+				q: allPRsQuery,
+				per_page: 1,
+			}),
+			octokit.rest.search.issuesAndPullRequests({
+				q: mergedPRsQuery,
+				per_page: 1,
+			}),
+		]);
+
+		console.log("GitHub API Response (Stats):", {
+			total_count: allPRsResponse.data.total_count,
+			merged_count: mergedPRsResponse.data.total_count,
+		});
+
+		return {
+			totalCount: allPRsResponse.data.total_count,
+			mergedCount: mergedPRsResponse.data.total_count,
+		};
+	} catch (error) {
+		console.error("GitHub API error (getUserPRStats):", error);
+		throw error;
+	}
+});
