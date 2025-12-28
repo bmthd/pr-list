@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Footer } from "@/app/(dashboard)/footer";
-import { TimezonedDateTime } from "@/app/(dashboard)/timezoned-date-time";
 import { env } from "@/config";
 import { getUserPRStats } from "@/repositories/github-repository";
 import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Stat, Text, VStack } from "@/ui";
@@ -10,7 +9,6 @@ import { ContributedOrganizations } from "./organization-list";
 export const revalidate = 3600;
 
 export default function Layout({ children }: LayoutProps<"/">) {
-	const now = Date.now();
 	return (
 		<Box minH="100vh" bg="gray.50" color="gray.800" display="flex" flexDirection="column">
 			<NavigationHeader />
@@ -35,9 +33,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
 				<GridItem minW={0}>{children}</GridItem>
 			</Grid>
 
-			<Footer>
-			<TimezonedDateTime timestamp={now} />
-		</Footer>
+			<Footer />
 		</Box>
 	);
 }
