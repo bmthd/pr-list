@@ -2,8 +2,6 @@ import { Box, HStack, NextLink, Text, VStack } from "@/ui";
 import { TimezonedDateTime } from "./timezoned-date-time";
 
 export function Footer() {
-	const now = Date.now();
-
 	return (
 		<Box as="footer" py={6} mt="auto">
 			<VStack gap={2}>
@@ -16,7 +14,7 @@ export function Footer() {
 					</NextLink>
 				</HStack>
 				<Text fontSize="xs" color="gray.400" textAlign="center">
-					Last updated: <TimezonedDateTime timestamp={now} />
+					Last updated: <TimezonedDateTime timestamp={Date.now()} />
 				</Text>
 			</VStack>
 		</Box>
