@@ -1,11 +1,7 @@
 "use client";
 
-interface TimezonedDateTimeProps {
-	timestamp: number;
-}
-
-export function TimezonedDateTime({ timestamp }: TimezonedDateTimeProps) {
-	const formattedDate = new Date(timestamp).toLocaleString("en-US", {
+export function TimezonedDateTime() {
+	const formattedDate = new Date(Date.now()).toLocaleString("en-US", {
 		year: "numeric",
 		month: "short",
 		day: "numeric",

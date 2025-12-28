@@ -9,7 +9,6 @@ import { ContributedOrganizations } from "./organization-list";
 export const revalidate = 3600;
 
 export default function Layout({ children }: LayoutProps<"/">) {
-	const now = Date.now();
 	return (
 		<Box minH="100vh" bg="gray.50" color="gray.800" display="flex" flexDirection="column">
 			<NavigationHeader />
@@ -34,7 +33,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
 				<GridItem minW={0}>{children}</GridItem>
 			</Grid>
 
-			<Footer now={now} />
+			<Footer />
 		</Box>
 	);
 }
