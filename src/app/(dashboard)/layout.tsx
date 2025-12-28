@@ -6,6 +6,8 @@ import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Stat, Text, VSt
 import { GithubAvatar } from "./github-avatar";
 import { ContributedOrganizations } from "./organization-list";
 
+export const revalidate = 3600; // Revalidate every hour
+
 export default function Layout({ children }: LayoutProps<"/">) {
 	return (
 		<Box minH="100vh" bg="gray.50" color="gray.800" display="flex" flexDirection="column">
