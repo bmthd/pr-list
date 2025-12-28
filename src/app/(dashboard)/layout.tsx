@@ -6,7 +6,7 @@ import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Stat, Text, VSt
 import { GithubAvatar } from "./github-avatar";
 import { ContributedOrganizations } from "./organization-list";
 
-export const revalidate = 3600;
+export const revalidate = 3600; // Revalidate every hour
 
 export default function Layout({ children }: LayoutProps<"/">) {
 	return (
