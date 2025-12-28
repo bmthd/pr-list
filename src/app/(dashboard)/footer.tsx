@@ -1,19 +1,11 @@
 import { Box, HStack, NextLink, Text, VStack } from "@/ui";
+import { TimezonedDateTime } from "./timezoned-date-time";
 
-function formatBuildTime(isoString: string | undefined): string {
-	if (!isoString) return "";
-	const date = new Date(isoString);
-	return date.toLocaleDateString("ja-JP", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
+interface FooterProps {
+	now: number;
 }
 
-export function Footer() {
-	const buildTime = process.env.NEXT_PUBLIC_BUILD_TIME;
-	const formattedDate = formatBuildTime(buildTime);
-
+export function Footer({ now }: FooterProps) {
 	return (
 		<Box as="footer" py={6} mt="auto">
 			<VStack gap={2}>
@@ -25,11 +17,9 @@ export function Footer() {
 						Yamada UI
 					</NextLink>
 				</HStack>
-				{formattedDate ? (
-					<Text fontSize="xs" color="gray.400" textAlign="center">
-						最終更新: {formattedDate}
-					</Text>
-				) : null}
+				<Text fontSize="xs" color="gray.400" textAlign="center">
+					Last updated: <TimezonedDateTime timestamp={now} />
+				</Text>
 			</VStack>
 		</Box>
 	);
