@@ -1,7 +1,11 @@
+import type { ReactNode } from "react";
 import { Box, HStack, NextLink, Text, VStack } from "@/ui";
-import { TimezonedDateTime } from "./timezoned-date-time";
 
-export function Footer() {
+interface FooterProps {
+	children: ReactNode;
+}
+
+export function Footer({ children }: FooterProps) {
 	return (
 		<Box as="footer" py={6} mt="auto">
 			<VStack gap={2}>
@@ -14,7 +18,7 @@ export function Footer() {
 					</NextLink>
 				</HStack>
 				<Text fontSize="xs" color="gray.400" textAlign="center">
-					Last updated: <TimezonedDateTime />
+					Last updated: {children}
 				</Text>
 			</VStack>
 		</Box>
