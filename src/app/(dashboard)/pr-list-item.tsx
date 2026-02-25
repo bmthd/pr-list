@@ -36,8 +36,7 @@ export function PRListItem({ pr }: PRListItemProps) {
 							external
 							colorScheme="black"
 							fontWeight="semibold"
-							overflow="hidden"
-							textOverflow="ellipsis"
+							overflowX="auto"
 							whiteSpace="nowrap"
 							flex={1}
 							minW={0}
