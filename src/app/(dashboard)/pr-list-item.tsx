@@ -36,11 +36,12 @@ export function PRListItem({ pr }: PRListItemProps) {
 							external
 							colorScheme="black"
 							fontWeight="semibold"
-							overflow="hidden"
-							textOverflow="ellipsis"
+							overflowX="auto"
 							whiteSpace="nowrap"
 							flex={1}
 							minW={0}
+							scrollbarWidth="none"
+							css={{ "&::-webkit-scrollbar": { display: "none" } }}
 						>
 							{pr.title}
 						</NextLink>
