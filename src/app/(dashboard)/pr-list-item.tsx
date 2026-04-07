@@ -40,6 +40,8 @@ export function PRListItem({ pr }: PRListItemProps) {
 							whiteSpace="nowrap"
 							flex={1}
 							minW={0}
+							scrollbarWidth="none"
+							css={{ "&::-webkit-scrollbar": { display: "none" } }}
 						>
 							{pr.title}
 						</NextLink>
