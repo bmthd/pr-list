@@ -7,7 +7,7 @@
       "dependencies": {
         "@next/third-parties": "^16",
         "@octokit/types": "^16.0.0",
-        "@praha/byethrow": "^0.9.0",
+        "@praha/byethrow": "^0.10.0",
         "@t3-oss/env-nextjs": "^0.13",
         "@yamada-ui/react": "^2",
         "next": "^16",
@@ -519,7 +519,7 @@
 
     "@polka/url": ["@polka/url@1.0.0-next.29", "", {}, "sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww=="],
 
-    "@praha/byethrow": ["@praha/byethrow@0.9.0", "", { "dependencies": { "@standard-schema/spec": "^1.0.0" }, "peerDependencies": { "typescript": ">=5.0.0" } }, "sha512-D8XhQ40RsGkwcJdKYqoQ2RUfoqgzztHWXZNpMaRE5P5U+D1c1YboFPc8hysJWQhqloQ32kCXB0XPwM3dFiNyIg=="],
+    "@praha/byethrow": ["@praha/byethrow@0.10.1", "", { "dependencies": { "@standard-schema/spec": "^1.0.0" }, "peerDependencies": { "typescript": ">=5.0.0" } }, "sha512-2pM0a6OQn6eMhTOMzQyo/3sWHpcvLlRUh4d0YkCqg9qnQMmRH8mJt+SI3PEbcp86dpR90Q08byrtGO6tjS3njw=="],
 
     "@rolldown/pluginutils": ["@rolldown/pluginutils@1.0.0-beta.47", "", {}, "sha512-8QagwMH3kNCuzD8EWL8R2YPW5e4OrHNSAHRFDdmFqEwEaD/KcNKjVoumo+gP2vW5eKB2UPbM6vTYiGZX0ixLnw=="],
 
