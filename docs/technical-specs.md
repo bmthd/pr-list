@@ -23,6 +23,7 @@
 
 ### 開発ツール
 - **リンター**: Biome v2 + ESLint v9
+- **型チェック**: Next.js typegen + TypeScript CLI (`tsc --noEmit --skipLibCheck`)
 - **テストフレームワーク**: Vitest v4
 - **ブラウザテスト**: Playwright (@vitest/browser-playwright)
 - **カバレッジ**: @vitest/coverage-v8
@@ -36,7 +37,7 @@ src/
 ├── app/                    # Next.js App Router (package by feature)
 │   ├── layout.tsx         # ルートレイアウト（Server Component）
 │   ├── page.tsx           # ホームページ（Server Component）
-│   ├── loading.tsx        # ローディング画面
+│   ├── loading.tsx        # 初期描画前の静的ダッシュボードシェル
 │   ├── error.tsx          # エラー画面
 │   ├── pr-list.tsx        # PR一覧コンポーネント（Server Component）
 │   ├── pr-card.tsx        # PRカードコンポーネント（Client Component）
@@ -93,6 +94,7 @@ interface AppPullRequest extends PullRequest {
 ### 初期読み込み
 - First Contentful Paint: < 1.5秒
 - Time to Interactive: < 3秒
+- `src/app/loading.tsx` はスピナーではなく、ヘッダー、プロフィール枠、組織枠、PR一覧枠を含む静的なダッシュボードシェルを表示する
 
 ### データ取得
 - API レスポンス: < 2秒
