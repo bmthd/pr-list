@@ -23,6 +23,7 @@
 
 ### 開発ツール
 - **リンター**: Biome v2 + ESLint v9
+- **型チェック**: Next.js typegen + TypeScript CLI (`tsc --noEmit --skipLibCheck`)
 - **テストフレームワーク**: Vitest v4
 - **ブラウザテスト**: Playwright (@vitest/browser-playwright)
 - **カバレッジ**: @vitest/coverage-v8
@@ -36,7 +37,7 @@ src/
 ├── app/                    # Next.js App Router (package by feature)
 │   ├── layout.tsx         # ルートレイアウト（Server Component）
 │   ├── page.tsx           # ホームページ（Server Component）
-│   ├── loading.tsx        # ローディング画面
+│   ├── (dashboard)/loading.tsx # PR一覧領域の静的ローディングシェル
 │   ├── error.tsx          # エラー画面
 │   ├── pr-list.tsx        # PR一覧コンポーネント（Server Component）
 │   ├── pr-card.tsx        # PRカードコンポーネント（Client Component）
@@ -93,6 +94,8 @@ interface AppPullRequest extends PullRequest {
 ### 初期読み込み
 - First Contentful Paint: < 1.5秒
 - Time to Interactive: < 3秒
+- `src/app/(dashboard)/layout.tsx` はヘッダーとサイドバーの実レイアウトを維持し、非同期領域だけに静的なfallbackを表示する
+- `src/app/(dashboard)/loading.tsx` はPR一覧領域だけを静的なシェルで表示し、実レイアウトとの差し替えによるレイアウトシフトを避ける
 
 ### データ取得
 - API レスポンス: < 2秒

@@ -1,8 +1,9 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Footer } from "@/app/(dashboard)/footer";
 import { env } from "@/config";
 import { getUserPRStats } from "@/repositories/github-repository";
-import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Stat, Text, VStack } from "@/ui";
+import { Box, Card, GithubIcon, Grid, GridItem, Heading, HStack, Separator, Stat, Text, VStack } from "@/ui";
 import { GithubAvatar } from "./github-avatar";
 import { ContributedOrganizations } from "./organization-list";
 
@@ -23,8 +24,12 @@ export default function Layout({ children }: LayoutProps<"/">) {
 			>
 				<GridItem>
 					<VStack gap={6}>
-						<UserProfileSummary />
-						<ContributedOrganizations />
+						<Suspense fallback={<UserProfileSummaryFallback />}>
+							<UserProfileSummary />
+						</Suspense>
+						<Suspense fallback={<ContributedOrganizationsFallback />}>
+							<ContributedOrganizations />
+						</Suspense>
 					</VStack>
 				</GridItem>
 
@@ -33,6 +38,62 @@ export default function Layout({ children }: LayoutProps<"/">) {
 
 			<Footer />
 		</Box>
+	);
+}
+
+function UserProfileSummaryFallback() {
+	return (
+		<Card.Root w="full">
+			<Card.Body p={6}>
+				<VStack align="center" gap={4}>
+					<Box w="24" h="24" borderRadius="full" bg="gray.200" />
+					<VStack gap={2} align="center">
+						<Box w="32" h="8" borderRadius="md" bg="gray.200" />
+						<Box w="28" h="4" borderRadius="md" bg="gray.100" />
+					</VStack>
+					<Grid w="full" templateColumns="1fr 1fr" gap={2}>
+						<MetricFallback label="Total PRs" />
+						<MetricFallback label="Merged PRs" />
+					</Grid>
+				</VStack>
+			</Card.Body>
+		</Card.Root>
+	);
+}
+
+function MetricFallback({ label }: { label: string }) {
+	return (
+		<VStack align="start" gap={2}>
+			<Text fontSize="sm" color="gray.500">
+				{label}
+			</Text>
+			<Box w="16" h="8" borderRadius="md" bg="gray.200" />
+		</VStack>
+	);
+}
+
+function ContributedOrganizationsFallback() {
+	const organizationPlaceholders = ["Organization loading 1", "Organization loading 2", "Organization loading 3"];
+
+	return (
+		<Card.Root w="full" overflow="hidden">
+			<Card.Body p={0}>
+				<Box bg="bg.muted" p="md">
+					<Heading size="sm" color="gray.700">
+						Contributed Organizations
+					</Heading>
+				</Box>
+				<VStack gap={0} separator={<Separator />}>
+					{organizationPlaceholders.map((label) => (
+						<HStack key={label} w="full" p={3} gap={3}>
+							<Box w="8" h="8" borderRadius="md" bg="gray.200" />
+							<Box h="4" flex="1" borderRadius="md" bg="gray.200" />
+							<Box w="12" h="4" borderRadius="md" bg="gray.100" />
+						</HStack>
+					))}
+				</VStack>
+			</Card.Body>
+		</Card.Root>
 	);
 }
 
