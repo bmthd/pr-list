@@ -4,7 +4,7 @@
 
 **Goal:** Replace the initial spinner with a static dashboard loading shell that reduces perceived wait stress.
 
-**Architecture:** `src/app/loading.tsx` owns the route loading UI and renders a data-free shell that visually resembles the dashboard layout. A node Vitest test checks the source contract to guard against reintroducing spinner-only loading.
+**Architecture:** `src/app/(dashboard)/layout.tsx` owns the stable dashboard chrome and sidebar fallbacks. `src/app/(dashboard)/loading.tsx` owns only the PR list loading UI. A node Vitest test checks the source contract to guard against reintroducing spinner-only loading or duplicated chrome.
 
 **Tech Stack:** Next.js App Router, React 19, Yamada UI, Vitest.
 
@@ -24,7 +24,7 @@
 - Create: `test/node/loading.test.tsx`
 
 **Interfaces:**
-- Consumes: source text from `src/app/loading.tsx`
+- Consumes: source text from `src/app/(dashboard)/loading.tsx` and `src/app/(dashboard)/layout.tsx`
 - Produces: regression coverage for loading shell copy and spinner removal
 
 - [ ] **Step 1: Write the failing test**
@@ -35,18 +35,25 @@ import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 
 describe("initial loading shell", () => {
-	const source = readFileSync(join(process.cwd(), "src/app/loading.tsx"), "utf8");
+	const dashboardLoadingSource = readFileSync(join(process.cwd(), "src/app/(dashboard)/loading.tsx"), "utf8");
+	const dashboardLayoutSource = readFileSync(join(process.cwd(), "src/app/(dashboard)/layout.tsx"), "utf8");
 
-	test("renders the dashboard structure before data arrives", () => {
-		expect(source).toContain("My Contribution Dashboard");
-		expect(source).toContain("Loading contribution overview");
-		expect(source).toContain("Contributed Organizations");
-		expect(source).toContain("Pull Requests");
+	test("renders loading placeholders inside the real dashboard layout", () => {
+		expect(dashboardLoadingSource).toContain("Pull Requests");
+		expect(dashboardLoadingSource).toContain("Fetching the latest contribution list");
+		expect(dashboardLoadingSource).not.toContain("My Contribution Dashboard");
+		expect(dashboardLoadingSource).not.toContain("Contributed Organizations");
+	});
+
+	test("keeps sidebar loading in the shared dashboard layout", () => {
+		expect(dashboardLayoutSource).toContain("Suspense");
+		expect(dashboardLayoutSource).toContain("UserProfileSummaryFallback");
+		expect(dashboardLayoutSource).toContain("ContributedOrganizationsFallback");
 	});
 
 	test("does not render a spinner-only loading indicator", () => {
-		expect(source).not.toContain("Loading.Circles");
-		expect(source).not.toContain("loadingScheme=\"rings\"");
+		expect(dashboardLoadingSource).not.toContain("Loading.Circles");
+		expect(dashboardLoadingSource).not.toContain("loadingScheme=\"rings\"");
 	});
 });
 ```
@@ -54,25 +61,27 @@ describe("initial loading shell", () => {
 - [ ] **Step 2: Run the test to verify it fails**
 
 Run: `bun test:node test/node/loading.test.tsx`
-Expected: FAIL because `loading.tsx` still renders only `Loading.Circles`.
+Expected: FAIL because `src/app/(dashboard)/loading.tsx` does not exist yet.
 
 ### Task 2: Static Loading Shell
 
 **Files:**
-- Modify: `src/app/loading.tsx`
+- Delete: `src/app/loading.tsx`
+- Create: `src/app/(dashboard)/loading.tsx`
+- Modify: `src/app/(dashboard)/layout.tsx`
 - Modify: `docs/technical-specs.md`
 
 **Interfaces:**
 - Consumes: Yamada UI layout components from `@/ui`
-- Produces: default loading component with dashboard shell content
+- Produces: route loading component with PR list shell content and layout-level sidebar fallbacks
 
 - [ ] **Step 1: Implement the minimal shell**
 
-Use `Box`, `Card`, `Grid`, `GridItem`, `Heading`, `HStack`, `Separator`, `Text`, and `VStack` to render the header, left rail placeholders, and PR list placeholders. Use static gray blocks with fixed heights and border radii to reserve layout space.
+Use `Box`, `Card`, `HStack`, `Separator`, `Text`, and `VStack` in `src/app/(dashboard)/loading.tsx` to render only the PR list placeholders. Wrap `UserProfileSummary` and `ContributedOrganizations` with `Suspense` in `src/app/(dashboard)/layout.tsx` and provide local fallbacks for their data-dependent content.
 
 - [ ] **Step 2: Update docs**
 
-Document that `src/app/loading.tsx` uses a static dashboard shell instead of a spinner.
+Document that loading uses the real dashboard layout and only swaps data-dependent regions.
 
 - [ ] **Step 3: Run focused verification**
 
