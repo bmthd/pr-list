@@ -10,7 +10,7 @@
 		"format:fix": "biome format --write .",
 		"lint:check": "biome lint .",
 		"lint:fix": "biome lint . --fix",
-		"type:check": "next typegen && bunx @typescript/native-preview --noEmit",
+		"type:check": "next typegen && tsc --noEmit",
 		"spell:check": "cspell . --gitignore --config cspell.config.json",
 		"test": "vitest",
 		"test:node": "vitest --project node",
