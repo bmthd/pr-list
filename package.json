@@ -51,7 +51,7 @@
 		"eslint-config-next": "^16",
 		"lefthook": "^2.0.8",
 		"npm-run-all2": "^9.0.0",
-		"typescript": "^6.0.0",
+		"typescript": "^7.0.0",
 		"vitest": "^4",
 		"vitest-browser-react": "^2"
 	}
